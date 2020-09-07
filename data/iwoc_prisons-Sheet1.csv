@@ -1,0 +1,3 @@
+id,facility,custody_level,address,lat,lng,population,gender
+MCF001,Faribault,"Lvl_2_Min,Lvl_3_Med","1101 Linden Lane Faribault, MN 55021",44.2847152,-93.2578639,2000,M
+MCF002,Lino Lakes,"Lvl_2_Min,Lvl_3_Med","7525 Fourth Avenue Lino Lakes, MN 55014",45.1793899,-93.1247954,1300,M
