@@ -4,6 +4,7 @@ window.addEventListener('DOMContentLoaded', createMap)
 
 let map;
 let sidebar;
+let panelID = "sidebar-pane";
 
 function createMap(prisons) {
   console.log("Creating map")
@@ -98,26 +99,31 @@ function addPoints(data) {
     marker.addTo(pointGroupLayer);
 
     // UNCOMMENT THIS LINE TO USE POPUPS
-    //marker.bindPopup('<h2>' + data[row].name + '</h2>There's a ' + data[row].description + ' here');
+    marker.bindPopup('<h2>' + data[row].facility + "</h2>Address: " + data[row].address);
 
     // COMMENT THE NEXT GROUP OF LINES TO DISABLE SIDEBAR FOR THE MARKERS
     marker.feature = {
       properties: {
-        name: data[row].name,
-        description: data[row].description,
+        name: data[row].facility,
+        address: data[row].address,
       },
     };
     marker.on({
       click: function (e) {
         L.DomEvent.stopPropagation(e);
-        document.getElementById("sidebar-title").innerHTML =
-          e.target.feature.properties.name;
+        // document.getElementById("sidebar-title").innerHTML =
+        //   e.target.feature.properties.facility;
         document.getElementById("sidebar-content").innerHTML =
-          e.target.feature.properties.description;
+          e.target.feature.properties.name;
         sidebar.open(panelID);
       },
     });
     // COMMENT UNTIL HERE TO DISABLE SIDEBAR FOR THE MARKERS
+    console.log("Facility: ", data[row].facility)
+    // Fill sidebar
+    d3.select('#home')
+      .append('p')
+      .text(data[row].facility)
 
     // AwesomeMarkers is used to create fancier icons
     let icon = L.AwesomeMarkers.icon({
@@ -132,6 +138,12 @@ function addPoints(data) {
     }
   }
 }
+
+// function fillSidebar(data){
+//   d3.select('#home')
+//     .append('p')
+//     .text(data.facility)
+// }
 
 
 // function createMarkers(response, tabletop) {
