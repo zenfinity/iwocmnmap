@@ -1,5 +1,7 @@
 // var pointsURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWhVn717WWm8wmujkDBrHPP2HF4FnpqiYwlxzjU6qdlL9pzPKabbgHzKxVuzbxEy4H5ZFaHtAIoLjd/pub?output=csv';
-var pointsURL = 'data/iwoc_prisons-Sheet1.csv'
+// var pointsURL = 'data/iwoc_prisons-Sheet1.csv'
+var pointsURLJSON = 'https://spreadsheets.google.com/feeds/list/1crAheLCSIE4e6BQx_I1aPNox-yYz_Sg3fa2aGUc9wu4/1/public/full?alt=json';
+
 window.addEventListener('DOMContentLoaded', createMap)
 
 let map;
@@ -46,11 +48,13 @@ function createMap(prisons) {
   //   complete: addGeoms,
   // });
   console.log("Before Parse")
-  Papa.parse(pointsURL, {
-    download: true,
-    header: true,
-    complete: addPoints,
-  });
+
+  addPoints();
+  // Papa.parse(pointsURL, {
+  //   download: true,
+  //   header: true,
+  //   complete: addPoints,
+  // });
   console.log("After Parse")
 
   // Move zoom
@@ -63,12 +67,123 @@ function createMap(prisons) {
   }).addTo(map);
 }
 
+// Using CSV //////////////////////////////////////////////////////////
+// function addPoints(data) {
+//   console.log("Inside addPoints")
+//   console.log("Passed data:")
+//   console.log(data)
+//   data = data.data;
+//   let pointGroupLayer = L.layerGroup().addTo(map);
 
-function addPoints(data) {
-  console.log("Inside addPoints")
-  console.log("Passed data:")
-  console.log(data)
-  data = data.data;
+//   // Choose marker type. Options are:
+//   // (these are case-sensitive, defaults to marker!)
+//   // marker: standard point with an icon
+//   // circleMarker: a circle with a radius set in pixels
+//   // circle: a circle with a radius set in meters
+//   let markerType = "marker";
+
+//   // Marker radius
+//   // Wil be in pixels for circleMarker, metres for circle
+//   // Ignore for point
+//   let markerRadius = 100;
+
+//   for (let row = 0; row < data.length; row++) {
+//     let marker;
+//     if (markerType == "circleMarker") {
+//       marker = L.circleMarker([data[row].lat, data[row].lng], {
+//         radius: markerRadius,
+//       });
+//     } else if (markerType == "circle") {
+//       marker = L.circle([data[row].lat, data[row].lng], {
+//         radius: markerRadius,
+//       });
+//     } else {
+//       marker = L.marker([data[row].lat, data[row].lng]);
+//     }
+//     marker.addTo(pointGroupLayer);
+
+//     // UNCOMMENT THIS LINE TO USE POPUPS
+//     marker.bindPopup('<h2>' + data[row].facility + "</h2>Address: " + data[row].address);
+
+//     // COMMENT THE NEXT GROUP OF LINES TO DISABLE SIDEBAR FOR THE MARKERS
+//     marker.feature = {
+//       properties: {
+//         name: data[row].facility,
+//         address: data[row].address,
+//       },
+//     };
+//     marker.on({
+//       click: function (e) {
+//         L.DomEvent.stopPropagation(e);
+//         // document.getElementById("sidebar-title").innerHTML =
+//         //   e.target.feature.properties.facility;
+//         document.getElementById("sidebar-content").innerHTML =
+//           e.target.feature.properties.name;
+//         sidebar.open(panelID);
+//       },
+//     });
+//     // COMMENT UNTIL HERE TO DISABLE SIDEBAR FOR THE MARKERS
+//     console.log("Facility: ", data[row].facility)
+//     // Fill sidebar
+//     d3.select('#home')
+//       .append('p')
+//       .text(data[row].facility)
+
+//     // AwesomeMarkers is used to create fancier icons
+//     let icon = L.AwesomeMarkers.icon({
+//       icon: "info-circle",
+//       iconColor: "white",
+//       markerColor: data[row].color,
+//       prefix: "fa",
+//       extraClasses: "fa-rotate-0",
+//     });
+//     if (!markerType.includes("circle")) {
+//       marker.setIcon(icon);
+//     }
+//   }
+// }
+
+// function getData(){
+//   const express = require('express');
+//   const request = require('request');
+
+//   const app = express();
+
+//   app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     next();
+//   });
+
+//   app.get('/e', (req, res) => {
+//     request(
+//       { url: pointsURL },
+//       (error, response, body) => {
+//         if (error || response.statusCode !== 200) {
+//           return res.status(500).json({ type: 'error', message: err.message });
+//         }
+
+//         Papa.parse(pointsURL, {
+//           download: true,
+//           header: true,
+//           complete: addPoints,
+//         });
+//       }
+//     )
+//   });
+
+//   const PORT = process.env.PORT || 3000;
+//   app.listen(PORT, () => console.log(`listening on ${PORT}`));
+// }
+//END USING CSV
+
+
+//Using JSON link
+function addPoints() {
+
+  // var prisonDict = d3.json(pointsURLJSON, function(data){
+  //   console.log("JSON",data);
+  // });
+
   let pointGroupLayer = L.layerGroup().addTo(map);
 
   // Choose marker type. Options are:
@@ -83,61 +198,74 @@ function addPoints(data) {
   // Ignore for point
   let markerRadius = 100;
 
-  for (let row = 0; row < data.length; row++) {
-    let marker;
-    if (markerType == "circleMarker") {
-      marker = L.circleMarker([data[row].lat, data[row].lng], {
-        radius: markerRadius,
+  d3.json(pointsURLJSON, function (data) {
+    console.log("JSON", data);
+    // console.log("Facility: ", data.feed.entry[0].gsx$facility.$t)
+    for (let row = 0; row < data.feed.entry.length; row++) {
+      console.log("row: ", row)
+      console.log("Facility: ", data.feed.entry[row].gsx$facility.$t)
+      let marker;
+      if (markerType == "circleMarker") {
+        marker = L.circleMarker([data.feed.entry[row].gsx$lat.$t, data.feed.entry[row].gsx$lng.$t], {
+          radius: markerRadius,
+        });
+      } else if (markerType == "circle") {
+        marker = L.circle([data.feed.entry[row].gsx$lat.$t, data.feed.entry[row].gsx$lng.$t], {
+          radius: markerRadius,
+        });
+      } else {
+        marker = L.marker([data.feed.entry[row].gsx$lat.$t, data.feed.entry[row].gsx$lng.$t]);
+      }
+      marker.addTo(pointGroupLayer);
+
+      // UNCOMMENT THIS LINE TO USE POPUPS
+      marker.bindPopup('<h2>' + data.feed.entry[row].gsx$facility.$t + "</h2>Address: " + data.feed.entry[row].gsx$address.$t);
+
+      // COMMENT THE NEXT GROUP OF LINES TO DISABLE SIDEBAR FOR THE MARKERS
+      marker.feature = {
+        properties: {
+          name: data.feed.entry[row].gsx$facility.$t,
+          address: data.feed.entry[row].gsx$address.$t,
+        },
+      };
+      marker.on({
+        click: function (e) {
+          L.DomEvent.stopPropagation(e);
+          // document.getElementById("sidebar-title").innerHTML =
+          //   e.target.feature.properties.facility;
+          document.getElementById("sidebar-content").innerHTML =
+            e.target.feature.properties.name;
+          sidebar.open(panelID);
+        },
       });
-    } else if (markerType == "circle") {
-      marker = L.circle([data[row].lat, data[row].lng], {
-        radius: markerRadius,
-      });
-    } else {
-      marker = L.marker([data[row].lat, data[row].lng]);
+      // COMMENT UNTIL HERE TO DISABLE SIDEBAR FOR THE MARKERS
+      
+      // Fill sidebar
+      d3.select('#home')
+        .append('p')
+        .text(data.feed.entry[row].gsx$facility.$t)
+
+      // // AwesomeMarkers is used to create fancier icons
+      // let icon = L.AwesomeMarkers.icon({
+      //   icon: "info-circle",
+      //   iconColor: "white",
+      //   markerColor: data[row].color,
+      //   prefix: "fa",
+      //   extraClasses: "fa-rotate-0",
+      // });
+      // if (!markerType.includes("circle")) {
+      //   marker.setIcon(icon);
+      // }
     }
-    marker.addTo(pointGroupLayer);
-
-    // UNCOMMENT THIS LINE TO USE POPUPS
-    marker.bindPopup('<h2>' + data[row].facility + "</h2>Address: " + data[row].address);
-
-    // COMMENT THE NEXT GROUP OF LINES TO DISABLE SIDEBAR FOR THE MARKERS
-    marker.feature = {
-      properties: {
-        name: data[row].facility,
-        address: data[row].address,
-      },
-    };
-    marker.on({
-      click: function (e) {
-        L.DomEvent.stopPropagation(e);
-        // document.getElementById("sidebar-title").innerHTML =
-        //   e.target.feature.properties.facility;
-        document.getElementById("sidebar-content").innerHTML =
-          e.target.feature.properties.name;
-        sidebar.open(panelID);
-      },
-    });
-    // COMMENT UNTIL HERE TO DISABLE SIDEBAR FOR THE MARKERS
-    console.log("Facility: ", data[row].facility)
-    // Fill sidebar
-    d3.select('#home')
-      .append('p')
-      .text(data[row].facility)
-
-    // AwesomeMarkers is used to create fancier icons
-    let icon = L.AwesomeMarkers.icon({
-      icon: "info-circle",
-      iconColor: "white",
-      markerColor: data[row].color,
-      prefix: "fa",
-      extraClasses: "fa-rotate-0",
-    });
-    if (!markerType.includes("circle")) {
-      marker.setIcon(icon);
-    }
-  }
+  });
 }
+
+// function getData(){
+//   var prisonDict = d3.json(pointsURLJSON, function(data){
+//     console.log(data);
+//   });
+//   return prisonDict;
+// }
 
 // function fillSidebar(data){
 //   d3.select('#home')
@@ -165,7 +293,7 @@ function addPoints(data) {
 //     // Add the marker to the bikeMarkers array
 //     prisonMarkers.push(prisonMarker);
 //   }
-  
+
 
 //   // Create a layer group made from the prison markers array, pass it into the createMap function
 //   createMap(L.layerGroup(prisonMarkers));
