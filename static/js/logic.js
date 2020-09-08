@@ -56,7 +56,7 @@ function createMap(prisons) {
 
   var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-    maxZoom: 18,
+    maxZoom: 8,
     id: "dark-v10",
     accessToken: API_KEY
   });
@@ -72,9 +72,30 @@ function createMap(prisons) {
     "Prisons": prisons
   };
 
+  // // Use this link to get the geojson data.
+  var link = "data/state_outlines.json";
+
+  function filterMN(feature) {
+    if (feature.properties.NAME === "Minnesota") return true
+  }
+
+  // Grabbing our GeoJSON data..
+  d3.json(link, function(data) {
+      // Creating a GeoJSON layer with the retrieved data
+      L.geoJson(data, {
+        style: function (feature) {
+          return {
+            color: '#C0C0C0',
+            fillOpacity: 0
+          };
+        },
+        filter: filterMN
+      }).addTo(map);
+  });
+
   // Create the map object with options, center of MN 46.7296° N, 94.6859° W
   map = L.map("map-id", {
-    center: [46.7296, -94.6859],
+    center: [46.5, -94.6859],
     zoom: 7,
     layers: [darkmap]
   });
