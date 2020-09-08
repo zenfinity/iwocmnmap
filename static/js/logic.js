@@ -54,10 +54,17 @@ function createMap(prisons) {
     accessToken: API_KEY
   });
 
+  var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+    maxZoom: 18,
+    id: "dark-v10",
+    accessToken: API_KEY
+  });
+
   // Create a baseMaps object to hold the lightmap layer
   var baseMaps = {
-    "Light Map": lightmap
-    // "Dark Map": darkmap
+    "Light Map": lightmap,
+    "Dark Map": darkmap
   };
 
   // Create an overlayMaps object to hold the bikeStations layer
@@ -69,39 +76,33 @@ function createMap(prisons) {
   map = L.map("map-id", {
     center: [46.7296, -94.6859],
     zoom: 7,
-    layers: [lightmap]
+    layers: [darkmap]
   });
 
   // Create Sidebar
   sidebar = L.control.sidebar('sidebar').addTo(map);
 
-  // Use PapaParse to load data from Google Sheets
-  // And call the respective functions to add those to the map.
-  // Papa.parse(geomURL, {
-  //   download: true,
-  //   header: true,
-  //   complete: addGeoms,
-  // });
-  console.log("Before Parse")
+  
 
+  // Draw markers
   addPoints();
-  // Papa.parse(pointsURL, {
-  //   download: true,
-  //   header: true,
-  //   complete: addPoints,
-  // });
-  console.log("After Parse")
 
   // Move zoom
-  // new L.Control.Zoom({ position: 'topright' }).addTo(map);
-  // Change the position of the Zoom Control to a newly created placeholder.
   map.zoomControl.setPosition('topright');
-  // Create a layer control, pass in the baseMaps and overlayMaps. Add the layer control to the map
+  
+  // // Create a layer control, pass in the baseMaps and overlayMaps. Add the layer control to the map
   // L.control.layers(baseMaps, overlayMaps, {
   //   collapsed: false
   // }).addTo(map);
 
+  // Add legend
+  createLegend(map);
 
+  
+  
+}//end createMap()
+
+function createLegend(myMap){
   var legend = L.control({position: 'bottomright'});
   // console.log("I am not legend");
   legend.onAdd = function (map) {
@@ -122,33 +123,11 @@ function createMap(prisons) {
     };
     return div;
   }
-  legend.addTo(map);
-  // // Handmade legend
-  // let legendArea = d3.select("map").append("g")
-  //   .attr("transform", "translate(10,-90)");
-  // let legendNames = ["All","Min1","Min2","MinMed","Med","Close","Max"];
-  // let legendColors = levelColors;
-  // let yVal = 100;
-  
-  // for (let i = 0; i < legendNames.length; i++) {
-  //   let xCircle = 50;
-  //   let xText = 70;
-
-  //   yVal = yVal + 30;
-
-  //   legendArea.append("circle").attr("cx", xCircle).attr("cy", yVal).attr("r", 10).style("fill", legendColors[i]).style("stroke", "black");
-  //   legendArea.append("text").attr("x", xText).attr("y", yVal).text(legendNames[i]).style("font-size", "15px").attr("alignment-baseline", "middle");
-  // };
+  legend.addTo(myMap);
 }
-
 
 //Using JSON link
 function addPoints() {
-
-  // var prisonDict = d3.json(pointsURLJSON, function(data){
-  //   console.log("JSON",data);
-  // });
-
   let pointGroupLayer = L.layerGroup().addTo(map);
 
   // Choose marker type. Options are:
@@ -159,7 +138,7 @@ function addPoints() {
   let markerType = "circleMarker";
 
   // Marker radius
-  // Wil be in pixels for circleMarker, metres for circle
+  // Will be in pixels for circleMarker, metres for circle
   // Ignore for point
   let markerRadius = 100;
 
@@ -178,7 +157,7 @@ function addPoints() {
         secColor = securityLevels[data.feed.entry[row].gsx$custodylevel.$t];
         marker = L.circleMarker([data.feed.entry[row].gsx$lat.$t, data.feed.entry[row].gsx$lng.$t], {
           // radius: markerRadius,
-          radius: parseInt(data.feed.entry[row].gsx$population.$t)/100,
+          radius: parseInt(data.feed.entry[row].gsx$population.$t)/30,
           // color: `'${securityLevels[data.feed.entry[row].gsx$custodylevel.$t]}'`,
           // color: `'${secColor}'`,
           // color: '#0077bb',
