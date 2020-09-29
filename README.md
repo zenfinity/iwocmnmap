@@ -1,7 +1,6 @@
 # iwocmnmap - A prison map of MN with additional data
 ### Description
-A map showing the prisons in MN fed by a private gDoc spreadsheet
-
+A map showing the prisons in MN fed by a private gDoc spreadsheet. A friend volunteers for Incarcerated Workers Organizing Committee (IWOC) MN, and she needed a consolidated source of info for prisons. It needed to be simple for her to update the information as needed, hence the use of gDocs. What's live and public is a dev version of the spreadsheet to maintain privacy.
 ### Resources
 - Using [Turbo87's Sidebarv2](https://github.com/Turbo87/sidebar-v2)
 - Using [ColorBrewer2](https://colorbrewer2.org/) to generate palette
