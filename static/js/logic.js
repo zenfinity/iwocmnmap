@@ -1,6 +1,8 @@
 // var pointsURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWhVn717WWm8wmujkDBrHPP2HF4FnpqiYwlxzjU6qdlL9pzPKabbgHzKxVuzbxEy4H5ZFaHtAIoLjd/pub?output=csv';
 // var pointsURL = 'data/iwoc_prisons-Sheet1.csv'
-var pointsURLJSON = 'https://spreadsheets.google.com/feeds/list/1crAheLCSIE4e6BQx_I1aPNox-yYz_Sg3fa2aGUc9wu4/1/public/full?alt=json';
+
+//Dev copy
+var pointsURLJSON = 'https://spreadsheets.google.com/feeds/list/1eCL-hrcGrkVN9dwWEasDI-oFfweaVJRqIIJ82MpwNo8/1/public/full?alt=json';
 
 window.addEventListener('DOMContentLoaded', createMap)
 
@@ -49,14 +51,16 @@ function createMap(prisons) {
   // Create the tile layer that will be the background of our map
   var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-    maxZoom: 8,
+    // maxZoom: 8,
+    // minZoom: 9,
     id: "light-v10",
     accessToken: API_KEY
   });
 
   var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-    maxZoom: 8,
+    // maxZoom: 8,
+    // minZoom: 9,
     id: "dark-v10",
     accessToken: API_KEY
   });
